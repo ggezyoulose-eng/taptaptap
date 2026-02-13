@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Tap Tap Tap</title>
+<style>
+body {
+    font-family: system-ui, sans-serif;
+    background: #111;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+button {
+    padding: 15px 25px;
+    font-size: 18px;
+    margin: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+#tapBtn { background: #4caf50; color: #fff; }
+#upgradeBtn { background: #2196f3; color: #fff; }
+#reverseBtn { background: #f44336; color: #fff; }
+
+.panel {
+    margin-top: 15px;
+    padding: 10px;
+    background: #222;
+    border-radius: 10px;
+}
+</style>
+</head>
+<body>
+
+<h1>💰 Tap Tap Tap</h1>
+
+<div class="panel">
+    <p>所持金: <span id="money">0</span> 円</p>
+    <p>1タップ: <span id="tapValue">1</span> 円</p>
+    <p>倍率: x<span id="multiplier">1</span></p>
+    <p>リバース回数: <span id="reverseCount">0</span></p>
+    <p>タップ数増加上限: <span id="tapMax">100</span></p>
+</div>
+
+<button id="tapBtn">👆 タップ</button>
+
+<div class="panel">
+    <button id="upgradeBtn">⬆ タップ収入アップ</button>
+    <p>必要金額: <span id="upgradeCost">10</span> 円</p>
+</div>
+
+<div class="panel">
+    <button id="reverseBtn">🔁 リバース</button>
+    <p>必要金額: <span id="reverseCost">10000</span> 円</p>
+</div>
+
+<script>
+let money = 0;
+let tapValue = 1;
+let tapLevel = 1;
+let multiplier = 1;
+let reverseCount = 0;
+
+let tapMax = 100;
+
+function upgradeCost() {
+    return Math.floor(10 * Math.pow(1.45, tapLevel));
+}
+
+function reverseCost() {
+    return Math.floor(10000 * Math.pow(5, reverseCount));
+}
+
+function updateUI() {
+    document.getElementById("money").textContent = Math.floor(money);
+    document.getElementById("tapValue").textContent = tapValue;
+    document.getElementById("multiplier").textContent = multiplier;
+    document.getElementById("reverseCount").textContent = reverseCount;
+    document.getElementById("upgradeCost").textContent = upgradeCost();
+    document.getElementById("reverseCost").textContent = reverseCost();
+    document.getElementById("tapMax").textContent = tapMax;
+}
+
+document.getElementById("tapBtn").onclick = () => {
+    money += tapValue * multiplier;
+    updateUI();
+};
+
+document.getElementById("upgradeBtn").onclick = () => {
+    if (tapValue >= tapMax) return;
+
+    let cost = upgradeCost();
+    if (money >= cost) {
+        money -= cost;
+        tapValue++;
+        tapLevel++;
+        updateUI();
+    }
+};
+
+document.getElementById("reverseBtn").onclick = () => {
+    if (reverseCount >= 10) return;
+
+    let cost = reverseCost();
+    if (money >= cost) {
+        money = 0;
+        reverseCount++;
+        multiplier = reverseCount + 1;
+
+        if (reverseCount === 5) tapMax = 125;
+        if (reverseCount === 10) tapMax = 150;
+
+        tapValue = 1;
+        tapLevel = 1;
+        updateUI();
+    }
+};
+
+updateUI();
+</script>
+
+</body>
+</html>
